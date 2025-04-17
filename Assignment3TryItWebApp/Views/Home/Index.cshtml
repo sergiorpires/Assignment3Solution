@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "TryIt Application - Home";
+}
+
+<main aria-labelledby="title">
+    <h2 id="title">@ViewBag.Title.</h2>
+    <hr>
+    <h4>@ViewBag.Message</h4>
+    <h4>CSE445 - Assignment 3</h4>
+    <h4>Here you can find the services list:</h4>
+    <br />
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Service#</th>
+                <th scope="col">Service Name</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>GeoCoding</td>
+                <td>Get the coordinates (latitude and Longitude) of the given address.</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Weather Service</td>
+                <td>Get the weather forecast for the next few days on that coordinate.</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Air Quality Service</td>
+                <td>Get the air quality on that specific coordinate.</td>
+            </tr>
+            <tr>
+                <th scope="row">4</th>
+                <td>WSDL Analyzer Service</td>
+                <td>Get the operations, inputs and outputs of the wsdl address.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br />
+    <h4> Go to the <a href="@Url.Action("TryIt", "Home")">TryIt Page</a> to access the tests for the services.</h4>
+    <br />
+</main>

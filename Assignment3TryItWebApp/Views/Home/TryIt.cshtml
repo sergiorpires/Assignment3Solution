@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "TryIt Page";
+    var weatherData = Session["WeatherForecast"] as Assignment3RestService.Models.WeatherForecastRoot;
+    var wsdlOperations = Session["WsdlOperations"] as List<Assignment3WcfService.Models.WsdlOperation>;
+    var airQuality = Session["AirQuality"] as List<KeyValuePair<string, string>>;
+}
+
+<main>
+
+    <h2 id="title">@ViewBag.Title.</h2>
+    <hr />
+
+    @*SERVICE 1*@
+
+    <h3>Service 1 - REST ELECTIVE</h3>
+    <h4>Geocoding</h4>
+    <h5>Return the coordinates based on the address the user supply. It is the basis for the next 2 services.</h5>
+
+    <div style="display:flex; align-items:flex-start; gap:40px">
+        <div style="flex: 1; vertical-align: top; margin-right: 20px;">
+            <form method="post" action="@Url.Action("GeoCode", "Home")">
+
+                <label class="form-label">Type your current address and click Submit:</label><br />
+                <input class="form-control" type="text" name="address" placeholder="Type the address" value="@Session["Address"]" style="width:800px;" required><br />
+                <button type="submit" class="btn btn-outline-primary">Submit</button><br />
+
+            </form>
+            <br />
+            <form method="post" action="@Url.Action("ClearSession", "Home")" style="display:inline;">
+                <button type="submit" class="btn btn-outline-danger">Clear Data</button>
+            </form>
+        </div>
+
+        <div style="flex: 1; vertical-align: top;">
+
+            @if (@Session["Latitude"] != null && @Session["Longitude"] != null)
+            {
+                <h3>Geocoding result:</h3>
+                <p><strong>Latitude: </strong>@Session["Latitude"]</p>
+                <p><strong>Longitude: </strong>@Session["Longitude"]</p>
+                <br />
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color:red;">@ViewBag.Error</p>
+            }
+        </div>
+    </div>
+
+    <br />
+    <hr />
+    <br />
+
+    @*SERVICE 2*@
+
+    <h3>Service 2 - REST REQUIRED</h3>
+    <h4>Weather Forecast Service (Using Service 1 coordinates)</h4>
+    <h5>Return weather information based on coordinates given by Service 1. Get the coordinates using Service 1 and then press Submit.</h5>
+    <form method="get" action="@Url.Action("WeatherForecast", "Home")">
+        <button type="submit" class="btn btn-outline-primary">Submit</button><br />
+    </form>
+    <br />
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th style="width: 110px;">Date</th>
+                <th>Avg Temp (°C)</th>
+                <th>Max Temp (°C)</th>
+                <th>Min Temp (°C)</th>
+                <th>Avg Wind (m/s)</th>
+                <th>Avg Humidity (%)</th>
+                <th>Precipitation (%)</th>
+                <th>Rain Sum (mm)</th>
+                <th>Snow Sum (mm)</th>
+                <th>Sunrise</th>
+                <th>Sunset</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (weatherData != null)
+            {
+                foreach (var day in weatherData.Timelines.Daily)
+                {
+                    <tr>
+                        <td>@day.Time.ToString("yyyy-MM-dd")</td>
+                        <td>@day.Values.temperatureAvg</td>
+                        <td>@day.Values.temperatureMax</td>
+                        <td>@day.Values.temperatureMin</td>
+                        <td>@day.Values.windSpeedAvg</td>
+                        <td>@day.Values.humidityAvg</td>
+                        <td>@day.Values.precipitationProbabilityAvg</td>
+                        <td>@day.Values.rainAccumulationSum</td>
+                        <td>@day.Values.snowAccumulationSum</td>
+                        <td>@day.Values.sunriseTime.ToString("HH:mm")</td>
+                        <td>@day.Values.sunsetTime.ToString("HH:mm")</td>
+                    </tr>
+                }
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color:red;">@ViewBag.Error</p>
+            }
+
+        </tbody>
+    </table>
+
+
+    <br />
+    <hr />
+    <br />
+
+    @*SERVICE 3*@
+
+    <h3>Service 3 - REST ADITIONAL</h3>
+    <h4>Air Quality Service (Using Service 1 coordinates)</h4>
+    <h5>Return air quality information based on coordinates given by Service 1. Get the coordinates using Service 1 and then press Submit.</h5>
+    <form method="get" action="@Url.Action("AirQuality", "Home")">
+        <button type="submit" class="btn btn-outline-primary">Submit</button><br />
+    </form>
+    <br />
+
+    <h4>Air Quality Information</h4>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Description</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (airQuality != null)
+            {
+                for (int i = 0; i < airQuality.Count; i++)
+                {
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@airQuality[i].Key</td>
+                        <td>@airQuality[i].Value</td>
+                    </tr>
+                }
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color:red;">@ViewBag.Error</p>
+            }
+
+        </tbody>
+    </table>
+
+
+    <br />
+    <hr />
+    <br />
+
+
+    @*SERVICE 4*@
+
+    <h3>Service 4 - WSDL REQUIRED</h3>
+    <h4>Get WSDL Operations Service</h4>
+    <h5>Return WSDL SOAP operation information of the national weather service in case the user wants to develop their own system. Can also return information from other addresses services.</h5>
+
+    <form method="get" action="@Url.Action("WsdlOperations", "Home")">
+
+        <label class="form-label">Type the WSDL url and click Submit:</label><br />
+        <input class="form-control input-lg" type="text" name="wsdlUrl" placeholder="Type the WSDL url" value="@Session["WsdlUrl"]" style="width:800px;" required><br />
+        <button type="submit" class="btn btn-outline-primary">Submit</button><br />
+
+    </form>
+    <br />
+
+    <h4>WSDL Operations</h4>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Operation Name</th>
+                <th>Input Parameters</th>
+                <th>Output Parameters</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (wsdlOperations != null)
+            {
+                foreach (var op in wsdlOperations)
+                {
+                    <tr>
+                        <td>@op.Operation</td>
+                        <td>@op.InputParameters</td>
+                        <td>@op.OutputParameters</td>
+                    </tr>
+                }
+            }
+
+            @if (ViewBag.Error != null)
+            {
+                <p style="color:red;">@ViewBag.Error</p>
+            }
+
+        </tbody>
+    </table>
+
+
+
+
+
+
+
+</main>
